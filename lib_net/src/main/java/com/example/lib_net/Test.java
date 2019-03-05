@@ -24,4 +24,7 @@ public class Test {
                 });
 
     }
+    public void post2String(String url){
+
+    }
 }

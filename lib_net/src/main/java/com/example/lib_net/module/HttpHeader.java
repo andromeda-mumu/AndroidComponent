@@ -1,7 +1,13 @@
 package com.example.lib_net.module;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -15,7 +21,7 @@ import java.util.TimeZone;
 public class HttpHeader implements Serializable {
     private static final long serialVersionUID = 5220766564242960066L;
 
-
+    public static final String FORMAT_HTTP_DATA = "EEE, dd MMM y HH:mm:ss 'GMT'";
     public static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone("GMT");
     public static final String HEAD_KEY_ACCEPT_LANGUAGE = "Accept-Language";
     public static final String HEAD_KEY_CONTENT_LENGTH = "Content-Length";
@@ -55,5 +61,29 @@ public class HttpHeader implements Serializable {
         }
     }
 
+    public String get(String key){
+       return mHeadersMap.get(key);
+    }
 
+    public static long getLastModified(String lastModified){
+        try {
+            return parseGMTToMillis(lastModified);
+        } catch (ParseException e) {
+            return 0;
+        }
+    }
+
+    public static String formatMillisToGMT(long milliseconds) {
+        Date date = new Date(milliseconds);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT_HTTP_DATA, Locale.US);
+        simpleDateFormat.setTimeZone(GMT_TIME_ZONE);
+        return simpleDateFormat.format(date);
+    }
+    public static long parseGMTToMillis(String gmtTime) throws ParseException {
+        if (TextUtils.isEmpty(gmtTime)) return 0;
+        SimpleDateFormat formatter = new SimpleDateFormat(FORMAT_HTTP_DATA, Locale.US);
+        formatter.setTimeZone(GMT_TIME_ZONE);
+        Date date = formatter.parse(gmtTime);
+        return date.getTime();
+    }
 }

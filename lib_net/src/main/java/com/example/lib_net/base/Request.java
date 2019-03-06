@@ -3,7 +3,9 @@ package com.example.lib_net.base;
 import com.example.lib_net.OkClient;
 import com.example.lib_net.adaper.CacheCall;
 import com.example.lib_net.adaper.Call;
+import com.example.lib_net.cahce.CacheMode;
 import com.example.lib_net.callback.Callback;
+import com.example.lib_net.convert.Convert;
 import com.example.lib_net.module.HttpHeader;
 import com.example.lib_net.module.HttpMethod;
 import com.example.lib_net.module.HttpParams;
@@ -30,13 +32,19 @@ public abstract class Request<T,R extends Request> implements Serializable{
     protected String mBaseUrl;
     protected transient OkHttpClient mOkHttpClient;
     protected transient Object mTag;
-    protected HttpHeader mHttpHeader;
-    protected HttpParams mHttpParams;
+    protected HttpHeader mHttpHeader = new HttpHeader();
+    protected HttpParams mHttpParams = new HttpParams();
 
     protected int mRetryCount;
     private okhttp3.Request mRequest;
     private Callback<T> mCallback;
     private Call<T> mCall;
+
+    private CacheMode mCacheMode;
+    private long cacheTime;
+    protected String cacheKey;
+    protected transient Convert<T> converter;
+    protected transient Callback<T> Callback;
 
 
     public Request(String url) {
@@ -56,6 +64,7 @@ public abstract class Request<T,R extends Request> implements Serializable{
     }
     public R headers(String key,String value){
         mHttpHeader.put(key,value);
+        return (R)this;
     }
     public R params(HttpParams params){
         mHttpParams.put(params);
@@ -70,6 +79,9 @@ public abstract class Request<T,R extends Request> implements Serializable{
         this.mRetryCount = retryCount;
         return (R)this;
     }
+    public int getRetryCount(){
+        return mRetryCount;
+    }
     public R params(Map<String, String> params, boolean... isReplace) {
         this.mHttpParams.put(params, isReplace);
         return (R) this;
@@ -78,6 +90,10 @@ public abstract class Request<T,R extends Request> implements Serializable{
     @SuppressWarnings("unchecked")
     public R params(String key, String value, boolean... isReplace) {
         mHttpParams.put(key, value, isReplace);
+        return (R) this;
+    }
+    public R params(String key, String value) {
+        mHttpParams.put(key, value,false);
         return (R) this;
     }
 
@@ -171,4 +187,51 @@ public abstract class Request<T,R extends Request> implements Serializable{
     }
 
 
+    public CacheMode getCacheMode() {
+        return mCacheMode;
+    }
+
+    public R cacheMode(CacheMode cacheMode) {
+        mCacheMode = cacheMode;
+        return (R)this;
+    }
+
+    public String getCacheKey() {
+        return cacheKey;
+    }
+
+    public R cacheKey(String cacheKey) {
+        this.cacheKey = cacheKey;
+        return (R)this;
+    }
+    public String getBaseUrl() {
+        return mBaseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        mBaseUrl = baseUrl;
+    }
+
+    public HttpParams getHttpParams() {
+        return mHttpParams;
+    }
+
+    public void setHttpParams(HttpParams httpParams) {
+        mHttpParams = httpParams;
+    }
+
+    public long getCacheTime() {
+        return cacheTime;
+    }
+
+    public void setCacheTime(long cacheTime) {
+        this.cacheTime = cacheTime;
+    }
+
+    public Convert<T> getConverter(){
+        //convert优先级高于callback
+        if(converter==null) converter=Callback;
+        HttpUtils.checkNotNull(converter,"converter == null, do you forget to call Request#converter(Converter<T>) ?");
+        return converter;
+    }
 }

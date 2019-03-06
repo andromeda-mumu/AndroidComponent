@@ -1,10 +1,14 @@
 package com.example.lib_net;
 
 
+import android.app.Application;
+import android.content.Context;
+
 import com.example.lib_net.module.HttpHeader;
 import com.example.lib_net.module.HttpParams;
 import com.example.lib_net.request.GetRequest;
 import com.example.lib_net.request.PostRequest;
+import com.example.lib_net.utils.HttpUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +28,7 @@ public class OkClient {
     private HttpParams mCommonParams;//全局公共参数
     private HttpHeader mCommonHeader; //全局公共header
 
-
+    private Context mContext;
 
     private int mRetryCount ;// 重試次数
     private final OkHttpClient mOkHttpClient;
@@ -42,6 +46,15 @@ public class OkClient {
 
         mOkHttpClient = builder.build();
     }
+
+    public void init(Application context){
+        this.mContext = context;
+    }
+    public Context getContext(){
+        HttpUtils.checkNotNull(mContext,"please call okClient.init first in application");
+        return mContext;
+    }
+
     public static OkClient getInstance(){
         return OkClientHolder.client;
     }

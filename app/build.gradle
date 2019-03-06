@@ -11,6 +11,10 @@ android {
         versionName build_version.version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -20,12 +24,12 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation deps.support.support_v7
-
     implementation deps.constraint
-
     implementation deps.glide
     annotationProcessor deps.glide_compiler
+    implementation project(':lib_net')
 
+    implementation  deps.okhttp
 }

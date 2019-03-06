@@ -1,8 +1,11 @@
 package com.example.lib_net.adaper;
 
 import com.example.lib_net.base.Request;
+import com.example.lib_net.cahce.CacheEntity;
+import com.example.lib_net.cahce.policy.CachePolicy;
 import com.example.lib_net.callback.Callback;
 import com.example.lib_net.module.Response;
+import com.example.lib_net.utils.HttpUtils;
 
 /**
  * Created by wangjiao on 2019/3/5.
@@ -13,19 +16,36 @@ import com.example.lib_net.module.Response;
 public class CacheCall<T> implements Call<T> {
 
     private Request<T,? extends Request> mRequest;
+    private CachePolicy<T> mCachePolicy;
     public CacheCall(Request<T,? extends Request> request){
         this.mRequest = request;
+        this.mCachePolicy = preparePolicy();
     }
+
     @Override
-    public Response<T> execute() throws Exception {
-        return null;
+    public Response<T> execute(){
+        CacheEntity<T> entity = mCachePolicy.prepareCache();
+        return mCachePolicy.requestSync(entity);
     }
 
     @Override
     public void execute(Callback<T> callback) {
+        HttpUtils.checkNotNull(callback,"callback==null");
 
+        CacheEntity<T> entity = mCachePolicy.prepareCache();
+        mCachePolicy.responseAsyn(entity,callback);
     }
 
+    private CachePolicy<T> preparePolicy() {
+        switch (mRequest.getCacheMode()){
+            case DEFAULT:
+            case NO_CACHE:
+            case IF_NONE_CACHE_REQUEST:
+            case FIRST_CACHE_THEN_REQUEST:
+            case REQUEST_FAILED_READ_CACHE:
+        }
+        return null;
+    }
     @Override
     public boolean isEexcuted() {
         return false;
@@ -33,21 +53,21 @@ public class CacheCall<T> implements Call<T> {
 
     @Override
     public void cancel() {
-
+        mCachePolicy.cancel();
     }
 
     @Override
     public boolean isCancel() {
-        return false;
+        return mCachePolicy.isCancel();
     }
 
     @Override
     public Call<T> clone() {
-        return null;
+        return new CacheCall<>(mRequest);
     }
 
     @Override
     public Request getRequest() {
-        return null;
+        return mRequest;
     }
 }

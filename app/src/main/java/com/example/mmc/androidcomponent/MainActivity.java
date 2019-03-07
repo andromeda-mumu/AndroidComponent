@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(com.example.lib_net.module.Response<String> response) {
-                            Log.d("=mmc=","----onSuccess----"+Thread.currentThread().getName());
+                            Log.d("=mmc=","--------"+response.getBody());
                     }
                 });
     }

@@ -86,7 +86,7 @@ public abstract class  BaseCachePolicy<T> implements CachePolicy<T> {
             T body = mRequest.getConverter().convertResponse(response);
             saveCache(response.headers(),body);
             return com.example.lib_net.module.Response.success(body,false,mRawCall,response);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if(e instanceof SocketTimeoutException && mCurrentRetryCount<mRequest.getRetryCount()){
                 mCurrentRetryCount++;
                 mRawCall = mRequest.getRawCall();
@@ -132,10 +132,15 @@ public abstract class  BaseCachePolicy<T> implements CachePolicy<T> {
                 }
                 if(onAnalysisResponse(mRawCall,response)) return;
 
-                T body = mRequest.getConverter().convertResponse(response);
-                saveCache(response.headers(),body);
-                com.example.lib_net.module.Response<T> success = com.example.lib_net.module.Response.success(body,false,mRawCall,response);
-                onSuccess(success);
+                try{
+                    T body = mRequest.getConverter().convertResponse(response);
+                    saveCache(response.headers(),body);
+                    com.example.lib_net.module.Response<T> success = com.example.lib_net.module.Response.success(body,false,mRawCall,response);
+                    onSuccess(success);
+                }catch (Throwable e){
+                    com.example.lib_net.module.Response<T> error = com.example.lib_net.module.Response.error(e,false,mRawCall,response);
+                    onError(error);
+                }
             }
         });
     }

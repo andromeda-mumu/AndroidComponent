@@ -14,5 +14,5 @@ public interface Convert<T> {
      * @param response
      * @return
      */
-    T convertResponse(Response response);
+    T convertResponse(Response response) throws Throwable;
 }

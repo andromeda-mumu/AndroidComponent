@@ -44,7 +44,7 @@ public class OkClient {
     private OkClient() {
         mDelivery = new Handler(Looper.getMainLooper());
         mRetryCount = 3;
-        mCacheMode = CacheMode.DEFAULT;
+        mCacheMode = CacheMode.NO_CACHE;
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         //todo #02 自定义拦截器 日志

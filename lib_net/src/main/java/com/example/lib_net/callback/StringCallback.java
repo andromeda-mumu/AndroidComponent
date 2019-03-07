@@ -15,7 +15,7 @@ public abstract class StringCallback extends AbstractCallback<String> {
         mConvert = new StringConvert();
     }
     @Override
-    public String convertResponse(Response response) {
+    public String convertResponse(Response response)throws Throwable {
        String s = mConvert.convertResponse(response);
        response.close();
        return s;

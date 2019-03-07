@@ -142,6 +142,13 @@ public class HttpParams implements Serializable{
     public void put(String key,File file){
         put(key,file,file.getName());
     }
+    public void putFileParams(String key,List<File> files){
+        if(key!=null && files!=null && !files.isEmpty()){
+            for (File file:files){
+                put(key,file);
+            }
+        }
+    }
     public void put(String key,File file,String name){
         put(key,file,name, HttpUtils.guessMimeType(name));
     }
@@ -168,6 +175,14 @@ public class HttpParams implements Serializable{
     public void remove(String key) {
         removeUrl(key);
         removeFile(key);
+    }
+
+    public void putFileWrapperParams(String key, List<FileWrapper> wrappers) {
+        if(key!=null && wrappers!=null && !wrappers.isEmpty()){
+            for (FileWrapper wrapper:wrappers){
+                put(key,wrapper);
+            }
+        }
     }
 
     /**--------------#06-不知道为啥这样写---------------*/

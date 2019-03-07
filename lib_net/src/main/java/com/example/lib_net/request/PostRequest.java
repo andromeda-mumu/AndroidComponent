@@ -1,7 +1,7 @@
 package com.example.lib_net.request;
 
 import com.example.lib_net.module.HttpMethod;
-import com.example.lib_net.request.base.NoBodyRequest;
+import com.example.lib_net.request.base.BodyRequest;
 
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -10,7 +10,7 @@ import okhttp3.RequestBody;
  * Created by wangjiao on 2019/3/5.
  */
 
-public class PostRequest<T> extends NoBodyRequest<T,PostRequest<T>> {
+public class PostRequest<T> extends BodyRequest<T,PostRequest<T>> {
     public PostRequest(String url) {
         super(url);
     }

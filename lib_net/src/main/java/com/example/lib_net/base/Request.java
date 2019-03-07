@@ -4,6 +4,7 @@ import com.example.lib_net.OkClient;
 import com.example.lib_net.adaper.CacheCall;
 import com.example.lib_net.adaper.Call;
 import com.example.lib_net.cahce.CacheMode;
+import com.example.lib_net.cahce.policy.CachePolicy;
 import com.example.lib_net.callback.Callback;
 import com.example.lib_net.convert.Convert;
 import com.example.lib_net.module.HttpHeader;
@@ -37,14 +38,14 @@ public abstract class Request<T,R extends Request> implements Serializable{
 
     protected int mRetryCount;
     private okhttp3.Request mRequest;
-    private Callback<T> mCallback;
     private Call<T> mCall;
 
     private CacheMode mCacheMode;
     private long cacheTime;
     protected String cacheKey;
     protected transient Convert<T> converter;
-    protected transient Callback<T> Callback;
+    protected transient Callback<T> callback;
+    protected transient CachePolicy<T> mCachePolicy;
 
 
     public Request(String url) {
@@ -56,6 +57,9 @@ public abstract class Request<T,R extends Request> implements Serializable{
             headers(okClient.getCommonHeader());
         if(okClient.getCommonParams()!=null)
             params(okClient.getCommonParams());
+
+        mRetryCount = okClient.getRetryCount();
+        mCacheMode = okClient.getCacheMode();
 
     }
     public R headers(HttpHeader header){
@@ -169,7 +173,7 @@ public abstract class Request<T,R extends Request> implements Serializable{
     /**----Rx支持----------yyy 获取同步call对象----------------*/
     public Call<T> adapt(){
         if(mCall==null)
-            mCall = new CacheCall<>(this);
+           return new CacheCall<>(this);
         return mCall;
     }
 
@@ -181,7 +185,7 @@ public abstract class Request<T,R extends Request> implements Serializable{
     public void execute(Callback<T> callback){
         HttpUtils.checkNotNull(callback,"callback==null");
 
-        this.mCallback = callback;
+        this.callback = callback;
         Call<T> call = adapt();
         call.execute(callback);
     }
@@ -230,8 +234,16 @@ public abstract class Request<T,R extends Request> implements Serializable{
 
     public Convert<T> getConverter(){
         //convert优先级高于callback
-        if(converter==null) converter=Callback;
+        if(converter==null) converter=callback;
         HttpUtils.checkNotNull(converter,"converter == null, do you forget to call Request#converter(Converter<T>) ?");
         return converter;
+    }
+
+    public CachePolicy<T> getCachePolicy() {
+        return mCachePolicy;
+    }
+
+    public void setCachePolicy(CachePolicy<T> cachePolicy) {
+        mCachePolicy = cachePolicy;
     }
 }

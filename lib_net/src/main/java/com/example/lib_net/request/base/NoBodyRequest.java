@@ -9,7 +9,7 @@ import okhttp3.RequestBody;
  * Created by wangjiao on 2019/3/5.
  */
 
-public abstract class NoBodyRequest<T,R extends Request> extends Request<T,R> {
+public abstract class NoBodyRequest<T,R extends NoBodyRequest> extends Request<T,R> {
 
     private static final long serialVersionUID = 8682024659457149958L;
 

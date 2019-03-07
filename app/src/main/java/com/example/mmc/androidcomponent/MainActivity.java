@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.lib_net.OkClient;
+import com.example.lib_net.callback.StringCallback;
 
 import okhttp3.Response;
 
@@ -16,27 +17,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        OkClient.getInstance().init(getApplication());
     }
 
     //异步请求
-    public void syncNet(View view){
-
+    public void ayncNet(View view){
+        Log.d("=mmc=","--------"+Thread.currentThread().getName());
+        OkClient.<String>get(url)
+                .tag(this)
+                .params("key","d517491cb99669e8286f2491d22e86cd")
+                .params("menu","红烧肉")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(com.example.lib_net.module.Response<String> response) {
+                            Log.d("=mmc=","----onSuccess----"+Thread.currentThread().getName());
+                    }
+                });
     }
 
     /**--------------同步请求 ----------------*/
-    public void ayncNet(View view){
-//        OkClient.<String>get(url)
-//                .tag("01")
-//                .params("key","d517491cb99669e8286f2491d22e86cd")
-//                .params("menu","红烧肉")
-//                .execute(new StringCallback() {
-//                    @Override
-//                    public void onSuccess(Response<String> response) {
-//                        //yyy 这应该是在子线程吧
-//                        Log.d("=mmc=","----thread----"+Thread.currentThread().getName());
-//                    }
-//                });
-
+    public void syncNet(View view){
         new Thread(new Runnable() {
             @Override
             public void run() {

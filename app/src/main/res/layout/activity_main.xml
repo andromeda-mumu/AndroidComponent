@@ -18,12 +18,12 @@
         app:layout_constraintTop_toTopOf="parent"/>
     <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="异步请求"
-            android:onClick="syncNet"
+            android:onClick="ayncNet"
     />
 
     <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="同步请求"
-            android:onClick="ayncNet"
+            android:onClick="syncNet"
     />
 
 

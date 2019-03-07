@@ -37,6 +37,8 @@ public class HttpHeader implements Serializable {
     public static final String HEAD_KEY_LAST_MODIFIED = "Last-Modified";
     public static final String HEAD_KEY_USER_AGENT = "User-Agent";
 
+    public static final String HEAD_KEY_PRAGMA="Pragma";
+
     public LinkedHashMap<String,String> mHeadersMap;
 
     public HttpHeader() {
@@ -85,5 +87,27 @@ public class HttpHeader implements Serializable {
         formatter.setTimeZone(GMT_TIME_ZONE);
         Date date = formatter.parse(gmtTime);
         return date.getTime();
+    }
+
+    public static long getDate(String gmtTime) {
+        try {
+           return parseGMTToMillis(gmtTime);
+        } catch (ParseException e) {
+          return 0;
+        }
+    }
+
+    public static long getExpiration(String expiresTime) {
+        try {
+           return parseGMTToMillis(expiresTime);
+        } catch (ParseException e) {
+            return -1;
+        }
+    }
+
+    public static String getCacheControl(String cacheControl, String pragma) {
+        if(cacheControl!=null) return cacheControl;
+        else if (pragma!=null) return pragma;
+        return null;
     }
 }

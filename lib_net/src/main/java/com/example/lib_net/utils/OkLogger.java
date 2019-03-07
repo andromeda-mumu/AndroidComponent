@@ -24,7 +24,7 @@ public class OkLogger {
         v(mTag,msg);
     }
 
-    private static void v(String mTag, String msg) {
+    public static void v(String mTag, String msg) {
         Log.v(mTag,msg);
     }
     public static void d(String msg) {

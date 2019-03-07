@@ -14,6 +14,27 @@ public class CacheManager extends BaseDao<CacheEntity<?>> {
     public static CacheManager getInstance(){
         return CacheManagerHolder.instance;
     }
+
+    public boolean remove(String cacheKey) {
+        if(cacheKey==null) return false;
+        return delete(CacheEntity.KEY+"=?",new String[]{cacheKey});
+
+    }
+
+    /**
+     * 更新缓存 有就替换 没有就创建
+     * @param cacheKey
+     * @param entity
+     * @param <T>
+     */
+    public <T> CacheEntity<T> replace(String cacheKey, CacheEntity<T> entity) {
+        entity.setKey(cacheKey);
+        replace(entity);
+        return entity;
+    }
+
+
+
     private static class CacheManagerHolder{
         private static CacheManager instance = new CacheManager();
     }
@@ -46,6 +67,6 @@ public class CacheManager extends BaseDao<CacheEntity<?>> {
 
     @Override
     public ContentValues getContentValues(CacheEntity<?> cacheEntity) {
-        return null;
+        return CacheEntity.getContentValues(cacheEntity);
     }
 }

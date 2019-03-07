@@ -24,8 +24,8 @@ public class TableEntity {
     /**--------------建表语句----------------*/
     public String buildTableString(){
         StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE IF NOT EXITS ");
-        sb.append(mTableName).append("(");
+        sb.append("CREATE TABLE IF NOT EXISTS ");
+        sb.append(mTableName).append(" (");
         for (ColumnEntity columnEntity:mList){
             if(columnEntity.compositePrimaryKey!=null){
                 sb.append("PRIMARY KEY (");

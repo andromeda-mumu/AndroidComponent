@@ -1,6 +1,9 @@
 package com.example.lib_net.cahce;
 
+import android.content.ContentValues;
+
 import com.example.lib_net.module.HttpHeader;
+import com.example.lib_net.utils.IOUtils;
 
 import java.io.Serializable;
 
@@ -86,5 +89,14 @@ public class CacheEntity<T> implements Serializable {
                 ", data=" + data + //
                 ", localExpire=" + localExpire + //
                 '}';
+    }
+
+    public static ContentValues getContentValues(CacheEntity<?> cacheEntity) {
+        ContentValues values = new ContentValues();
+        values.put(CacheEntity.KEY,cacheEntity.getKey());
+        values.put(LOCAL_EXPIRE, cacheEntity.getLocalExpire());
+        values.put(HEAD, IOUtils.toByteArray(cacheEntity.getResponseHeader()));
+        values.put(DATA, IOUtils.toByteArray(cacheEntity.getData()));
+        return values;
     }
 }

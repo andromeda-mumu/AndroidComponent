@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.lib_net.utils.OkLogger;
+
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -44,4 +46,42 @@ public abstract class BaseDao<T> {
 
     /** 需要替换的列 */
     public abstract ContentValues getContentValues(T t);
+
+    /**--------------根据条件删除----------------*/
+    public boolean delete(String whereClause,String[] whereArgs){
+        long start = System.currentTimeMillis();
+        lock.lock();
+        try{
+            db.beginTransaction();
+            db.delete(getTableName(),whereClause,whereArgs);
+            db.setTransactionSuccessful();
+            return true;
+        }catch (Exception e){
+            OkLogger.printStackTrace(e);
+        }finally {
+            db.endTransaction();
+            lock.unlock();
+            OkLogger.v(TAG,System.currentTimeMillis()-start+" delete");
+        }
+        return false;
+    }
+
+    public boolean replace(T t) {
+        if(t==null) return false;
+        long start = System.currentTimeMillis();
+        lock.lock();
+        try {
+            db.beginTransaction();
+            db.replace(getTableName(),null,getContentValues(t));
+            db.setTransactionSuccessful();
+            return true;
+        }catch (Exception e){
+            OkLogger.printStackTrace(e);
+        }finally {
+            db.endTransaction();
+            lock.unlock();
+            OkLogger.v(TAG,System.currentTimeMillis() - start + " replaceT");
+        }
+        return false;
+    }
 }

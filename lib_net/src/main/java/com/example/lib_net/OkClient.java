@@ -3,7 +3,10 @@ package com.example.lib_net;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
+import com.example.lib_net.cahce.CacheMode;
 import com.example.lib_net.module.HttpHeader;
 import com.example.lib_net.module.HttpParams;
 import com.example.lib_net.request.GetRequest;
@@ -27,6 +30,7 @@ public class OkClient {
 
     private HttpParams mCommonParams;//全局公共参数
     private HttpHeader mCommonHeader; //全局公共header
+    private CacheMode mCacheMode;           //全局缓存模式
 
     private Context mContext;
 
@@ -34,8 +38,14 @@ public class OkClient {
     private final OkHttpClient mOkHttpClient;
     //todo #01 缓存模式 & 时间
 
+    private Handler mDelivery;//线程调度器
+
    /**--------------单例 client基本配置----------------*/
     private OkClient() {
+        mDelivery = new Handler(Looper.getMainLooper());
+        mRetryCount = 3;
+        mCacheMode = CacheMode.DEFAULT;
+
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         //todo #02 自定义拦截器 日志
         builder.connectTimeout(DEFAULT_MILLISECONDS, TimeUnit.MILLISECONDS);
@@ -58,6 +68,11 @@ public class OkClient {
     public static OkClient getInstance(){
         return OkClientHolder.client;
     }
+
+    public Handler getDelivery() {
+        return mDelivery;
+    }
+
     private static class OkClientHolder{
         private static OkClient client = new OkClient();
     }
@@ -79,6 +94,15 @@ public class OkClient {
         return mRetryCount;
     }
 
+    /** 获取全局的缓存模式 */
+    public CacheMode getCacheMode() {
+        return mCacheMode;
+    }
+    /** 全局的缓存模式 */
+    public OkClient setCacheMode(CacheMode cacheMode) {
+        mCacheMode = cacheMode;
+        return this;
+    }
     public void setRetryCount(int retryCount) {
         if (retryCount < 0) throw new IllegalArgumentException("retryCount must > 0");
         mRetryCount = retryCount;

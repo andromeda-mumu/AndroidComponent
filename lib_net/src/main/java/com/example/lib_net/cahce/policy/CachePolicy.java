@@ -41,6 +41,6 @@ public interface CachePolicy<T> {
     void responseAsyn(CacheEntity<T> cacheEntity, Callback<T> callback);
 
     boolean isExecuted();
-    boolean cancel();
+    void cancel();
     boolean isCancel();
 }

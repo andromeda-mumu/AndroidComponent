@@ -8,6 +8,8 @@ import android.view.View;
 import com.example.lib_net.OkClient;
 import com.example.lib_net.callback.StringCallback;
 
+import java.io.IOException;
+
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //异步请求
-    public void ayncNet(View view){
+    public void ayncGetNet(View view){
         Log.d("=mmc=","--------"+Thread.currentThread().getName());
         OkClient.<String>get(url)
                 .tag(this)
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**--------------同步请求 ----------------*/
-    public void syncNet(View view){
+    public void syncGetNet(View view){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -54,4 +56,39 @@ public class MainActivity extends AppCompatActivity {
         }).start();
 
     }
+
+    public void ayncPostNet(View view){
+        OkClient.<String>post(url)
+                .tag(this)
+                .params("key","d517491cb99669e8286f2491d22e86cd")
+                .params("menu","红烧肉")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(com.example.lib_net.module.Response<String> response) {
+                        Log.d("=mmc=","----post-aync---"+response.getBody());
+
+                    }
+                });
+
+    }
+    public void syncPostNet(View view){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response response = OkClient.post(url)
+                            .params("key","d517491cb99669e8286f2491d22e86cd")
+                            .params("menu","红烧肉")
+                            .execute();
+                    String body = response.body().string();
+                    Log.d("=mmc=","----post sync----"+body);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+    }
 }
+

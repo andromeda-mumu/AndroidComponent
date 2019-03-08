@@ -17,14 +17,24 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
     <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="异步请求"
-            android:onClick="ayncNet"
+        android:text="异步GET请求"
+            android:onClick="ayncGetNet"
     />
 
     <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="同步请求"
-            android:onClick="syncNet"
+        android:text="同步GET请求"
+            android:onClick="syncGetNet"
     />
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="异步POST请求"
+            android:onClick="ayncPostNet"
+    />
+
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="同步POST请求"
+            android:onClick="syncPostNet"
+    />
+
 
 
 

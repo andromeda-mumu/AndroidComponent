@@ -10,9 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * Created by wangjiao on 2019/3/5.
@@ -70,5 +73,39 @@ public class HttpUtils {
         }
         builder.headers(headerBuilder.build());
         return builder;
+    }
+
+    /**--------------生成类似表单的请求体----------------*/
+    public static RequestBody generateMultipartRequestBody(HttpParams httpParams, boolean isMultipart) {
+        if(httpParams.fileParamsMap.isEmpty() && !isMultipart){
+            //表单提交，但没有文件
+            FormBody.Builder formBuilder = new FormBody.Builder();
+            for (Map.Entry<String,List<String>> entry:httpParams.urlParamsMap.entrySet()){
+                List<String> values = entry.getValue();
+                for (String value:values){
+                    formBuilder.add(entry.getKey(),value);
+                }
+            }
+            return formBuilder.build();
+        }else{
+            //表单提交 有文件
+            MultipartBody.Builder multipartBodyBuilder = new MultipartBody.Builder();
+            //拼接键值对
+            for (Map.Entry<String,List<String>> entry:httpParams.urlParamsMap.entrySet()){
+                List<String> values = entry.getValue();
+                for (String value:values){
+                    multipartBodyBuilder.addFormDataPart(entry.getKey(),value);
+                }
+            }
+            //拼接文件
+            for(Map.Entry<String,List<HttpParams.FileWrapper>> entry:httpParams.fileParamsMap.entrySet()){
+                List<HttpParams.FileWrapper> list = entry.getValue();
+                for (HttpParams.FileWrapper wrapper:list){
+                    RequestBody fileBody = RequestBody.create(wrapper.contentType,wrapper.file);
+                    multipartBodyBuilder.addFormDataPart(entry.getKey(),wrapper.filename,fileBody);
+                }
+            }
+            return multipartBodyBuilder.build();
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.example.lib_net.request.base;
 
+import android.text.TextUtils;
+
 import com.example.lib_net.base.Request;
 import com.example.lib_net.module.HttpHeader;
 import com.example.lib_net.module.HttpParams;
@@ -8,6 +10,9 @@ import com.example.lib_net.utils.HttpUtils;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -136,10 +141,30 @@ public abstract class BodyRequest<T,R extends BodyRequest> extends Request<T,R> 
             url = HttpUtils.createUrlFromParams(mBaseUrl,mHttpParams.urlParamsMap);
         if(mRequestBody!=null) return mRequestBody;
 
-
-        return null;
+        if(mContent!=null && mMediaType!=null) return  RequestBody.create(mMediaType,mContent);
+        if(mFile!=null && mMediaType!=null) return RequestBody.create(mMediaType,mFile);
+        if(mBytes!=null && mMediaType!=null) return RequestBody.create(mMediaType,mBytes);
+        return HttpUtils.generateMultipartRequestBody(mHttpParams,isMultipart);
     }
     protected okhttp3.Request.Builder generateRequestBuilder(RequestBody requestBody){
-        return null;
+        try {
+            headers(HttpHeader.HEAD_KEY_CONTENT_LENGTH,String.valueOf(requestBody.contentLength()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
+        return HttpUtils.appendHeader(builder,mHttpHeader);
+    }
+    private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
+        inputStream.defaultReadObject();
+        String mediaTypeString = (String) inputStream.readObject();
+        if(!TextUtils.isEmpty(mediaTypeString)){
+            mMediaType = MediaType.parse(mediaTypeString);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.defaultWriteObject();
+        outputStream.writeObject(mMediaType==null?"":mMediaType.toString());
     }
 }

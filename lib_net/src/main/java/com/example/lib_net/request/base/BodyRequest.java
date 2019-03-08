@@ -30,8 +30,6 @@ public abstract class BodyRequest<T,R extends BodyRequest> extends Request<T,R> 
     protected boolean isSpliceUrl = false;//是否拼接url参数
     private String url;
 
-    protected HttpParams mHttpParams = new HttpParams();
-    protected HttpHeader mHttpHeader = new HttpHeader();
 
     private RequestBody mRequestBody;
     private String mContent; //上传的文本内容

@@ -1,6 +1,7 @@
 package com.example.mmc.androidcomponent;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -8,7 +9,12 @@ import android.view.View;
 import com.example.lib_net.OkClient;
 import com.example.lib_net.callback.StringCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import okhttp3.Response;
 
@@ -82,12 +88,39 @@ public class MainActivity extends AppCompatActivity {
                             .execute();
                     String body = response.body().string();
                     Log.d("=mmc=","----post sync----"+body);
+                    try {
+                        JSONObject jsonObject = new JSONObject(body);
+                        String reason = jsonObject.getString("reason");
+                        Log.d("=mmc=","----reason---"+reason);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             }
         }).start();
+
+    }
+
+    public void syncUpString(View view){
+//        String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/360/mmx.jpg";
+//        File file = new File(fileName);
+//        if(file.exists()){
+//            Log.d("=mmc=","--exist--");
+//        }
+//        OkClient.<String>post(url)
+//                .tag(this)
+//                .params("key","d517491cb99669e8286f2491d22e86cd")
+//                .params("menu","红烧肉")
+//                .execute(new StringCallback() {
+//                    @Override
+//                    public void onSuccess(com.example.lib_net.module.Response<String> response) {
+//                        Log.d("=mmc=","----upString---"+response.getBody());
+//
+//                    }
+//                });
 
     }
 }

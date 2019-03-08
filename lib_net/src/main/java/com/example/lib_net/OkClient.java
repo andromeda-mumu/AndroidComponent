@@ -9,8 +9,14 @@ import android.os.Looper;
 import com.example.lib_net.cahce.CacheMode;
 import com.example.lib_net.module.HttpHeader;
 import com.example.lib_net.module.HttpParams;
+import com.example.lib_net.request.DeleteRequest;
 import com.example.lib_net.request.GetRequest;
+import com.example.lib_net.request.HeadRequest;
+import com.example.lib_net.request.OptionRequest;
+import com.example.lib_net.request.PatchRequest;
 import com.example.lib_net.request.PostRequest;
+import com.example.lib_net.request.PutRequest;
+import com.example.lib_net.request.TraceRequest;
 import com.example.lib_net.utils.HttpUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -84,11 +90,28 @@ public class OkClient {
     public static <T> GetRequest<T> get(String url){
         return new GetRequest<>(url);
     }
+    public static <T> HeadRequest<T> head(String url){
+        return new HeadRequest<>(url);
+    }
+    public static <T> TraceRequest<T> trace(String url){
+        return new TraceRequest<>(url);
+    }
     /**--------------post请求----------------*/
     public static <T> PostRequest<T> post(String url){
         return new PostRequest<>(url);
     }
-
+    public static <T> PatchRequest<T> patch(String url){
+        return new PatchRequest<>(url);
+    }
+    public static <T> OptionRequest<T> options(String url){
+        return new OptionRequest<>(url);
+    }
+    public static <T> DeleteRequest<T> delete(String url){
+        return new DeleteRequest<>(url);
+    }
+    public static <T> PutRequest<T> put(String url){
+        return new PutRequest<>(url);
+    }
 
     public int getRetryCount() {
         return mRetryCount;

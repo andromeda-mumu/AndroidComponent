@@ -6,6 +6,8 @@ version.support= "27.0.2"
 version.constraint_layout ="1.1.3"
 version.glide = "4.9.0"
 version.okhttp ="3.13.1"
+version.gson = "2.8.5"
+version.chuck ="1.0.4"
 
 
 def deps = [:]
@@ -23,6 +25,9 @@ deps.okhttp ="com.squareup.okhttp3:okhttp:$version.okhttp"
 //other
 deps.glide ="com.github.bumptech.glide:glide:$version.glide"
 deps.glide_compiler ="com.github.bumptech.glide:compiler:$version.glide"
+//json
+deps.gson = "com.google.code.gson:gson:$version.gson"
+deps.chuck="com.readystatesoftware.chuck:library:$version.chuck"
 ext.deps = deps
 
 def build_version=[:]

@@ -29,4 +29,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation deps.support.support_v7
     implementation deps.okhttp
+    implementation deps.gson
+    implementation deps.chuck
 }

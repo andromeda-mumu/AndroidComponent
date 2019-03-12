@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.lib_net.utils.OkLogger;
 
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -84,4 +85,28 @@ public abstract class BaseDao<T> {
         }
         return false;
     }
+
+    /** 查询满足条件的一个结果 */
+    public T queryOne(String selection, String[] selectionArgs) {
+      return null;
+    }
+    /** 更新一条记录 */
+    public boolean update(ContentValues contentValues, String whereClause, String[] whereArgs) {
+        long start = System.currentTimeMillis();
+        lock.lock();
+        try {
+            db.beginTransaction();
+            db.update(getTableName(), contentValues, whereClause, whereArgs);
+            db.setTransactionSuccessful();
+            return true;
+        } catch (Exception e) {
+            OkLogger.printStackTrace(e);
+        } finally {
+            db.endTransaction();
+            lock.unlock();
+            OkLogger.v(TAG, System.currentTimeMillis() - start + " updateContentValues");
+        }
+        return false;
+    }
+
 }

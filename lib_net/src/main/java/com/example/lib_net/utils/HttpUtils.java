@@ -1,10 +1,15 @@
 package com.example.lib_net.utils;
 
+import android.text.TextUtils;
+
+import com.example.lib_net.OkClient;
 import com.example.lib_net.module.HttpHeader;
 import com.example.lib_net.module.HttpParams;
 
+import java.io.UnsupportedEncodingException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,6 +21,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by wangjiao on 2019/3/5.
@@ -107,5 +113,73 @@ public class HttpUtils {
             }
             return multipartBodyBuilder.build();
         }
+    }
+
+    public static void runOnUiThread(Runnable runnable) {
+        OkClient.getInstance().getDelivery().post(runnable);
+    }
+
+    /** 根据响应头或者url获取文件名 */
+    public static String getNetFileName(Response response, String url) {
+        String fileName = getHeaderFileName(response);
+        if (TextUtils.isEmpty(fileName)) fileName = getUrlFileName(url);
+        if (TextUtils.isEmpty(fileName)) fileName = "unknownfile_" + System.currentTimeMillis();
+        try {
+            fileName = URLDecoder.decode(fileName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            OkLogger.printStackTrace(e);
+        }
+        return fileName;
+    }
+
+    /**
+     * 通过 ‘？’ 和 ‘/’ 判断文件名
+     * http://mavin-manzhan.oss-cn-hangzhou.aliyuncs.com/1486631099150286149.jpg?x-oss-process=image/watermark,image_d2F0ZXJtYXJrXzIwMF81MC5wbmc
+     */
+    private static String getUrlFileName(String url) {
+        String filename = null;
+        String[] strings = url.split("/");
+        for (String string : strings) {
+            if (string.contains("?")) {
+                int endIndex = string.indexOf("?");
+                if (endIndex != -1) {
+                    filename = string.substring(0, endIndex);
+                    return filename;
+                }
+            }
+        }
+        if (strings.length > 0) {
+            filename = strings[strings.length - 1];
+        }
+        return filename;
+    }
+
+    /**
+     * 解析文件头
+     * Content-Disposition:attachment;filename=FileName.txt
+     * Content-Disposition: attachment; filename*="UTF-8''%E6%9B%BF%E6%8D%A2%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A.pdf"
+     */
+    private static String getHeaderFileName(Response response) {
+        String dispositionHeader = response.header(HttpHeader.HEAD_KEY_CONTENT_DISPOSITION);
+        if (dispositionHeader != null) {
+            //文件名可能包含双引号，需要去除
+            dispositionHeader = dispositionHeader.replaceAll("\"", "");
+            String split = "filename=";
+            int indexOf = dispositionHeader.indexOf(split);
+            if (indexOf != -1) {
+                return dispositionHeader.substring(indexOf + split.length(), dispositionHeader.length());
+            }
+            split = "filename*=";
+            indexOf = dispositionHeader.indexOf(split);
+            if (indexOf != -1) {
+                String fileName = dispositionHeader.substring(indexOf + split.length(), dispositionHeader.length());
+                String encode = "UTF-8''";
+                if (fileName.startsWith(encode)) {
+                    fileName = fileName.substring(encode.length(), fileName.length());
+                }
+                return fileName;
+            }
+        }
+        return null;
     }
 }

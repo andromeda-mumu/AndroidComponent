@@ -38,6 +38,7 @@ public class HttpHeader implements Serializable {
     public static final String HEAD_KEY_USER_AGENT = "User-Agent";
 
     public static final String HEAD_KEY_PRAGMA="Pragma";
+    public static final String HEAD_KEY_CONTENT_DISPOSITION = "Content-Disposition";
 
     public LinkedHashMap<String,String> mHeadersMap;
 
